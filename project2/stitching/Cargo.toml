@@ -5,3 +5,4 @@ authors = ["perry92205"]
 
 [dependencies]
 image = "*"
+num = "*"

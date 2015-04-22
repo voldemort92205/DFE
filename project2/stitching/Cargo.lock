@@ -3,6 +3,7 @@ name = "stitching"
 version = "0.1.0"
 dependencies = [
  "image 0.3.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "num 0.1.22 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
