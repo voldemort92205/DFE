@@ -2,3 +2,6 @@
 name = "stitching"
 version = "0.1.0"
 authors = ["perry92205"]
+
+[dependencies]
+image = "*"
