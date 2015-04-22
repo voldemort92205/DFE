@@ -18,11 +18,17 @@ fn main() {
 
 	let args: Vec<_> = env::args().collect();
 	if args.len() > 1 {
-		let img = image::open(&Path::new(&args[1])).unwrap();
-		println!("dimensions{:?}", img.dimensions());
+		let mut img = image::open(&Path::new(&args[1])).unwrap();
+
+		//get row  and col
+		let (row, col) = img.dimensions();		
+//		println!("(row, col) = ({:?}, {:?})", row, col);
 		
-		println!("{:?}", img.color());
-		let ref mut fout = File::create(&Path::new("out.png")).unwrap();
-		let _ = img.save(fout, image::PNG);
+		let subimg = imageops::crop(img, 0, 0, 100, 100);
+
+
+//		let ref mut fout = File::create(&Path::new("out.png")).unwrap();
+//		let _ = img.save(fout, image::PNG);
+
 	}
 }
