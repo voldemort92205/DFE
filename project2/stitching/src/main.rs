@@ -22,13 +22,9 @@ fn main() {
 
 		//get row  and col
 		let (row, col) = img.dimensions();		
-//		println!("(row, col) = ({:?}, {:?})", row, col);
 		
-		let subimg = imageops::crop(img, 0, 0, 100, 100);
-
-
-//		let ref mut fout = File::create(&Path::new("out.png")).unwrap();
-//		let _ = img.save(fout, image::PNG);
+		let ref mut fout = File::create(&Path::new("out.png")).unwrap();
+		let _ = img.save(fout, image::PNG);
 
 	}
 }
