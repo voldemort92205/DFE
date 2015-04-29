@@ -6,7 +6,7 @@ const K: f32 = 0.05;
 
 // windows 限制到ˋ3*3, 5*5, 7*7
 pub fn harris_corner(img: &mut DynamicImage, window_size: u8) {
-    make_gray(img);
+    // let gray_img = make_gray(img);
 }
 
 fn make_gray(img: &DynamicImage) -> Vec<Vec<u32>> {
@@ -23,4 +23,20 @@ fn make_gray(img: &DynamicImage) -> Vec<Vec<u32>> {
 
 fn rgb_luma(rgb: Rgb<u8>) -> u32 {
     rgb.data[0] as u32 + rgb.data[1] as u32 + rgb.data[2] as u32
+}
+
+fn gaussian(s: i8) -> Vec<Vec<f32>> {
+    fn gaussian_f(x: i8, y: i8) -> f32 {
+        (((x * x) as f32 + (y * y) as f32) / -5.0).exp()
+    }
+    let mut window = Vec::new();
+    let mid = s / 2;
+    for i in 0..(s - 1) {
+        let mut tmp = Vec::new();
+        for j in 0..(s - 1) {
+            tmp.push(gaussian_f(i - mid, j - mid));
+        }
+        window.push(tmp);
+    }
+    window
 }
