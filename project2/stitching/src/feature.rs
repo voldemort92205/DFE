@@ -3,7 +3,7 @@ use image::{GenericImage, DynamicImage, Pixel, Rgb};
 use std::marker::Copy;
 
 // K 是 det(M) - K * trace(M)平方  中的K，經驗值為0.04到0.06
-const K: f64 = 0.14;
+const K: f64 = 0.2;
 
 fn new_2d_vector<T: Copy>(init: T, x: u32, y: u32) -> Vec<Vec<T>> {
     let mut _2d_vec = Vec::new();

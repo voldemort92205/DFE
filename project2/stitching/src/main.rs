@@ -5,19 +5,25 @@ use std::fs::File;
 use std::path::Path;
 use std::env;
 use std::str::FromStr;
-use image::GenericImage;
 mod feature;
+mod cylindrical_wrap;
 
 fn main() {
 	let args: Vec<_> = env::args().collect();
-	if args.len() > 1 {
+	if args.len() == 4 {
 		let mut img = image::open(&Path::new(&args[1])).unwrap();
-        let threshold = f64::from_str(&args[2]).unwrap();
+        let ref output_name = args[2];
+        let threshold = f64::from_str(&args[3]).unwrap();
         println!("threshold is {}", threshold);
+        let new_img = cylindrical_wrap::transform(&img, 250.0);
 
-        feature::harris_corner(&mut img, 5, threshold);
+        // feature::harris_corner(&mut img, 5, threshold);
+        
 
-		let mut fout = File::create(&Path::new("out.png")).unwrap();
-		let _ = img.save(&mut fout, image::PNG);
+		let mut fout = File::create(&Path::new(output_name)).unwrap();
+		let _ = new_img.save(&mut fout, image::PNG);
 	}
+    else {
+        println!("Usage: stitching <input> <output> <threshold>");
+    }
 }
