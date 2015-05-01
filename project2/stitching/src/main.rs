@@ -15,9 +15,9 @@ fn main() {
         let ref output_name = args[2];
         let threshold = f64::from_str(&args[3]).unwrap();
         println!("threshold is {}", threshold);
-        let new_img = cylindrical_wrap::transform(&img, 250.0);
+        let mut new_img = cylindrical_wrap::transform(&img, 1500.0);
 
-        // feature::harris_corner(&mut img, 5, threshold);
+        feature::harris_corner(&mut new_img, 5, threshold);
         
 
 		let mut fout = File::create(&Path::new(output_name)).unwrap();
