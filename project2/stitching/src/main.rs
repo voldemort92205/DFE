@@ -15,8 +15,10 @@ fn main() {
         let ref output_name = args[2];
         let threshold = f64::from_str(&args[3]).unwrap();
         println!("threshold is {}", threshold);
-        let mut new_img = cylindrical_wrap::transform(&img, 1500.0);
-
+        
+		//by test, the input focal length needs 5 times of real focal length
+		let mut new_img = cylindrical_wrap::transform(&img, 3000.0);
+		
         feature::harris_corner(&mut new_img, 5, threshold);
         
 
