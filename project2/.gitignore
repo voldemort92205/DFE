@@ -4,3 +4,7 @@
 
 # cargo
 target/
+
+
+#mytest, I put my own test file in this folder
+mytest/
