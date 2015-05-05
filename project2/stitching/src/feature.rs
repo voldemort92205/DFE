@@ -1,27 +1,17 @@
 extern crate image;
 use image::{GenericImage, DynamicImage, Pixel, Rgb};
-use std::marker::Copy;
+// use std::marker::Copy;
+use util::{new_2d_vector};
 
 // K 是 det(M) - K * trace(M)平方  中的K，經驗值為0.04到0.06
 const K: f64 = 0.2;
-
-fn new_2d_vector<T: Copy>(init: T, x: u32, y: u32) -> Vec<Vec<T>> {
-    let mut _2d_vec = Vec::new();
-    for _ in 1..x {
-        let mut _1d_vec = Vec::new();
-        for _ in 1..y {
-            _1d_vec.push(init);
-        }
-        _2d_vec.push(_1d_vec);
-    }
-    _2d_vec
-}
+const WINDOW_SIZE: i32 = 5;
 
 // windows 限制到ˋ3*3, 5*5, 7*7
-pub fn harris_corner(img: &mut DynamicImage, window_size: i32, threshold: f64) {
+pub fn harris_corner(img: &mut DynamicImage, threshold: f64) -> Vec<(u32, u32)> {
     let gray_img = make_gray(img);
-    let window = gaussian(window_size);
-    let border = window_size / 2;
+    let window = gaussian(WINDOW_SIZE);
+    let border = WINDOW_SIZE / 2;
     let mut harris_value = new_2d_vector::<f64>(0.0 as f64, img.width(), img.height());
 
     // 所以相片不能比window還小
@@ -44,6 +34,7 @@ pub fn harris_corner(img: &mut DynamicImage, window_size: i32, threshold: f64) {
         }
     }
     let mut max: f64 = 0.0 as f64;
+    let mut ans = Vec::new();
     // TODO: make col as i32
     for col in 1..(img.width() - 2) {
         for row in 1..(img.height() - 2) {
@@ -59,17 +50,14 @@ pub fn harris_corner(img: &mut DynamicImage, window_size: i32, threshold: f64) {
                     }
                 }
                 if ok {
-                    for i in [-2, -1, 0, 1, 2].iter() {
-                        for j in [-2, -1, 0, 1, 2].iter() {
-                            img.put_pixel((col as i32 + *i) as u32, (row as i32 + *j) as u32, image::Rgba {data: [255, 0, 0, 255]});
-                        }
-                    }
                     println!("harris_value: {}, in ({}, {})", value, col, row);
+                    ans.push((col, row))
                 }
             }
             if max < value {max = value;}
         }
     }
+    ans
 }
 
 fn estimate_f(a: f64, b: f64, c: f64) -> f64 {
