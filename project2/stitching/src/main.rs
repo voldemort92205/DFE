@@ -1,6 +1,6 @@
 extern crate image;
-use image::DynamicImage;
-use std::fs::File;
+// use image::DynamicImage;
+// use std::fs::File;
 use std::path::Path;
 use std::env;
 use std::str::FromStr;
@@ -26,14 +26,13 @@ fn main() {
             let points = feature::harris_corner(&new_img, threshold);
             let mut img_with_feature = ImgWithFeature::new(new_img, points);
 
-            // TODO: not to draw red
-            // util::draw_red_point(&mut new_img, &points);
             // let mut fout = File::create(&Path::new(output_name)).unwrap();
             // let _ = new_img.save(&mut fout, image::PNG);
 
             matchf::count_descriptor(&mut img_with_feature);
             if i != 4 {
                 matchf::match_feature(&mut img_fs[i - 5], &mut img_with_feature);
+                matchf::ransac(&img_fs[i - 5]);
             }
             img_fs.push(img_with_feature);
         }

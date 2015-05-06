@@ -75,8 +75,6 @@ pub fn count_descriptor(img_f: &mut ImgWithFeature) {
 
 pub fn match_feature(img_f: &mut ImgWithFeature, img_f2: &mut ImgWithFeature) {
     fn dis(descriptor1: [[f64; 8]; 4], descriptor2: [[f64; 8]; 4]) -> f64 {
-        // println!("{:?}", descriptor1);
-        // println!("{:?}", descriptor2);
         let mut ans = 0.0;
         for i in 0..4 {
             for j in 0..8 {
@@ -92,8 +90,6 @@ pub fn match_feature(img_f: &mut ImgWithFeature, img_f2: &mut ImgWithFeature) {
         let mut smallest = (0, 0);
         for j in 0..img_f2.features.len() {
             let distance = dis(img_f.features[i].descriptor, img_f2.features[j].descriptor);
-             // println!("dis between ({}, {}), ({}, {}) is {}",
-             //         img_f.features[i].x, img_f.features[i].y, img_f2.features[j].x, img_f2.features[j].y, distance);
             if min > distance {
                 min = distance;
                 smallest = (img_f2.features[j].x, img_f2.features[j].y);
@@ -116,27 +112,57 @@ pub fn match_feature(img_f: &mut ImgWithFeature, img_f2: &mut ImgWithFeature) {
         }
     }
     println!("out: {}", out);
+    img_f.features = img_f.features.iter().filter(|f| f.can_match).map(|f| *f).collect::<Vec<Feature>>();
     for i in 0..img_f.features.len() {
         if img_f.features[i].can_match {
             println!("({}, {}) match to {:?}", img_f.features[i].x, img_f.features[i].y, img_f.features[i].match_to);
         }
-        // println!("({}, {}) match to {:?}", img_f.features[i].x, img_f.features[i].y, img_f.features[i].match_to);
     }
 }
 
-// fn ransac(img_f: ImgWithFeature, img_f2: ImgWithFeature) {
-//     fn (img_f: ImgWithFeature) -> Vec<usize> {
-//         let mut count = 0;
-//         let mut node = Vec::new();
-//         while count < 3 {
-//             let r = rand::random::<usize>() % img_f.features.len();
-//             if img_f.features[r].can_match {
-//                 count += 1;
-//                 node.push(r);
-//             }
-//         }
-//         node
-//     }
-//     
-//
-// }
+pub fn ransac(img_f: &ImgWithFeature) -> (i32, i32) {
+    fn rand_point (img_f: &ImgWithFeature) -> Vec<usize> {
+        let mut node = Vec::new();
+        for _ in 0..3 {
+            let r = rand::random::<usize>() % img_f.features.len();
+            node.push(r);
+        }
+        node
+    }
+    fn dis((x1, y1): (f64, f64), (x2, y2): (f64, f64)) -> f64 {
+        ((x1-x2).powf(2.0) + (y1-y2).powf(2.0)).sqrt()
+    }
+    let threshold = 20.0;
+    let mut best = 0;
+    let mut ans = (0, 0);
+    for _ in (0..1000) {
+        let mut sumx = 0.0; let mut sumy = 0.0;
+        let rand_p = rand_point(&img_f);
+        for i in rand_p {
+            match img_f.features[i].match_to {
+                (x, y) => {
+                    sumx += x as f64 - img_f.features[i].x as f64; 
+                    sumy += y as f64 - img_f.features[i].y as f64;
+                }
+            }
+        }
+        sumx /= 3.0; sumy /= 3.0;
+        println!("move {} {}", sumx, sumy);
+        let mut count = 0;
+        for feature in &img_f.features {
+            match feature.match_to {
+                (x, y) => {
+                    if dis((feature.x as f64 + sumx, feature.y as f64 + sumy), (x as f64, y as f64)) < threshold {
+                        count += 1;
+                    }
+                }
+            }
+        }
+        if count > best {
+            best = count;
+            ans = (sumx as i32, sumy as i32);
+        }
+    }
+    println!("best move is {:?}, {} in threshold", ans, best);
+    ans
+}
