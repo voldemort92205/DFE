@@ -1,14 +1,14 @@
 extern crate image;
 use image::{GenericImage, DynamicImage, Pixel, Rgb};
-// use std::marker::Copy;
 use util::{new_2d_vector};
+use def;
 
 // K 是 det(M) - K * trace(M)平方  中的K，經驗值為0.04到0.06
 const K: f64 = 0.2;
 const WINDOW_SIZE: i32 = 5;
 
 // windows 限制到ˋ3*3, 5*5, 7*7
-pub fn harris_corner(img: &mut DynamicImage, threshold: f64) -> Vec<(u32, u32)> {
+pub fn harris_corner(img: &DynamicImage, threshold: f64) -> Vec<def::Feature> {
     let gray_img = make_gray(img);
     let window = gaussian(WINDOW_SIZE);
     let border = WINDOW_SIZE / 2;
@@ -51,7 +51,7 @@ pub fn harris_corner(img: &mut DynamicImage, threshold: f64) -> Vec<(u32, u32)> 
                 }
                 if ok {
                     println!("harris_value: {}, in ({}, {})", value, col, row);
-                    ans.push((col, row))
+                    ans.push(def::Feature::new(col, row));
                 }
             }
             if max < value {max = value;}
