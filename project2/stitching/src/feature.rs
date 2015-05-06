@@ -52,7 +52,7 @@ pub fn harris_corner(img: &DynamicImage, threshold: f64) -> Vec<def::Feature> {
                 }
                 if ok && col + 5 < img.width() - 5 && col as i32 - 5 >= 0 &&
                         row + 5 < img.height() && row as i32 - 5 >= 0 {
-                    println!("harris_value: {}, in ({}, {})", value, col, row);
+                    // println!("harris_value: {}, in ({}, {})", value, col, row);
                     ans.push(def::Feature::new(col, row));
                 }
             }

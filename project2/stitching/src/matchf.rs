@@ -84,7 +84,7 @@ pub fn match_feature(img_f: &mut ImgWithFeature, img_f2: &mut ImgWithFeature) {
         ans.sqrt()
     }
     // 計算最大跟次大求比例
-    let mut out = 0;
+    // let mut out = 0;
     for i in 0..img_f.features.len() {
         let mut min = 9999999999.9;
         let mut smallest = (0, 0);
@@ -103,21 +103,21 @@ pub fn match_feature(img_f: &mut ImgWithFeature, img_f2: &mut ImgWithFeature) {
                 sec_min = dis(img_f.features[i].descriptor, img_f2.features[j].descriptor);
             }
         }
-        println!("feature {}, min: {}, sec_min:{}", i, min, sec_min);
-        if  min / sec_min < 0.90 {
+        // println!("feature {}, min: {}, sec_min:{}", i, min, sec_min);
+        if  min / sec_min < 0.85 {
             img_f.features[i].match_to = smallest;
         } else {
             img_f.features[i].can_match = false;
-            out += 1;
+            // out += 1;
         }
     }
-    println!("out: {}", out);
+    // println!("out: {}", out);
     img_f.features = img_f.features.iter().filter(|f| f.can_match).map(|f| *f).collect::<Vec<Feature>>();
-    for i in 0..img_f.features.len() {
-        if img_f.features[i].can_match {
-            println!("({}, {}) match to {:?}", img_f.features[i].x, img_f.features[i].y, img_f.features[i].match_to);
-        }
-    }
+    // for i in 0..img_f.features.len() {
+    //     if img_f.features[i].can_match {
+    //         println!("({}, {}) match to {:?}", img_f.features[i].x, img_f.features[i].y, img_f.features[i].match_to);
+    //     }
+    // }
 }
 
 pub fn ransac(img_f: &ImgWithFeature) -> (i32, i32) {
@@ -147,7 +147,6 @@ pub fn ransac(img_f: &ImgWithFeature) -> (i32, i32) {
             }
         }
         sumx /= 3.0; sumy /= 3.0;
-        println!("move {} {}", sumx, sumy);
         let mut count = 0;
         for feature in &img_f.features {
             match feature.match_to {
