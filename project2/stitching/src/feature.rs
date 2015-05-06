@@ -1,6 +1,6 @@
 extern crate image;
-use image::{GenericImage, DynamicImage, Pixel, Rgb};
-use util::{new_2d_vector};
+use image::{GenericImage, DynamicImage, Pixel};
+use util::{new_2d_vector, rgb_luma};
 use def;
 
 // K 是 det(M) - K * trace(M)平方  中的K，經驗值為0.04到0.06
@@ -15,8 +15,9 @@ pub fn harris_corner(img: &DynamicImage, threshold: f64) -> Vec<def::Feature> {
     let mut harris_value = new_2d_vector::<f64>(0.0 as f64, img.width(), img.height());
 
     // 所以相片不能比window還小
-    for col in (border + 1)..(img.width() as i32 - 2 - border) {
-        for row in(border + 1)..(img.height() as i32 - 2 - border) {
+    // +4 是為了之後的descriptor
+    for col in (border + 1 + 4)..(img.width() as i32 - 2 - border - 4) {
+        for row in(border + 1 + 4)..(img.height() as i32 - 2 - border - 4) {
             // 計算每點的u, v
             let mut a: f64 = 0.0;
             let mut b: f64 = 0.0;
@@ -49,7 +50,8 @@ pub fn harris_corner(img: &DynamicImage, threshold: f64) -> Vec<def::Feature> {
                         }
                     }
                 }
-                if ok {
+                if ok && col + 5 < img.width() - 5 && col as i32 - 5 >= 0 &&
+                        row + 5 < img.height() && row as i32 - 5 >= 0 {
                     println!("harris_value: {}, in ({}, {})", value, col, row);
                     ans.push(def::Feature::new(col, row));
                 }
@@ -67,10 +69,6 @@ fn estimate_f(a: f64, b: f64, c: f64) -> f64 {
 }
 
 fn make_gray(img: &DynamicImage) -> Vec<Vec<i32>> {
-    fn rgb_luma(rgb: Rgb<u8>) -> i32 {
-        rgb.data[0] as i32 + rgb.data[1] as i32 + rgb.data[2] as i32
-    }
-
     let mut gray_img = Vec::new();
     for col in 0..(img.width() - 1) {
         let mut a_col = Vec::new();

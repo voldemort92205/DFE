@@ -6,4 +6,5 @@ authors = ["perry92205"]
 [dependencies]
 image = "*"
 num = "*"
+rand = "0.3"
 
