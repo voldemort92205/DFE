@@ -104,7 +104,7 @@ pub fn match_feature(img_f: &mut ImgWithFeature, img_f2: &mut ImgWithFeature) {
             }
         }
         // println!("feature {}, min: {}, sec_min:{}", i, min, sec_min);
-        if  min / sec_min < 0.85 {
+        if  min / sec_min < 0.8 {
             img_f.features[i].match_to = smallest;
         } else {
             img_f.features[i].can_match = false;
@@ -123,7 +123,7 @@ pub fn match_feature(img_f: &mut ImgWithFeature, img_f2: &mut ImgWithFeature) {
 pub fn ransac(img_f: &ImgWithFeature) -> (i32, i32) {
     fn rand_point (img_f: &ImgWithFeature) -> Vec<usize> {
         let mut node = Vec::new();
-        for _ in 0..3 {
+        for _ in 0..6 {
             let r = rand::random::<usize>() % img_f.features.len();
             node.push(r);
         }
@@ -135,7 +135,7 @@ pub fn ransac(img_f: &ImgWithFeature) -> (i32, i32) {
     let threshold = 20.0;
     let mut best = 0;
     let mut ans = (0, 0);
-    for _ in (0..1000) {
+    for _ in (0..5000) {
         let mut sumx = 0.0; let mut sumy = 0.0;
         let rand_p = rand_point(&img_f);
         for i in rand_p {
